@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<title>Meta Play 1 by Siobhan O'Flynn</title>
+<meta name="author" content="Siobhan O'Flynn">
+<meta name="description" content="An interactive text where the hover effect reveals lines from Arturo Béjar's 2023 testimony below lines from a Mark Zuckerberg 2018 statement.">
+<style>
+  :root {
+    --ink: #2b2a27;
+    --bg: #f2ede4;
+    --accent: #0082ff;
+    --faint: #8a8577;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .stage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* Each row pairs one paragraph-1 line with its paragraph-2 line */
+  .row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0.5rem 0;
+  }
+
+  .line1 {
+    display: block;
+    font-size: clamp(1.05rem, 3vw, 1.7rem);
+    line-height: 1.6;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    text-align: center;
+  }
+  .row:hover .line1,
+  .line1.active {
+    color: var(--accent);
+  }
+
+  /* Paragraph #2's line: hidden and collapsed until its row is hovered */
+  .line2 {
+    display: block;
+    font-size: clamp(0.9rem, 2.4vw, 1.3rem);
+    line-height: 1.6;
+    color: var(--faint);
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.6s ease, opacity 0.6s ease, margin-top 0.6s ease;
+    margin-top: 0;
+    text-align: center;
+  }
+  .line2.visible {
+    max-height: 200px;
+    opacity: 1;
+    margin-top: 0.35rem;
+  }
+
+  /* Attribution row styling. These behave exactly like the other rows now —
+     "— Arturo Béjar" only appears when you hover "— Mark Zuckerberg". */
+  .line1.attribution {
+    font-style: italic;
+    font-size: clamp(0.85rem, 2.2vw, 1.15rem);
+    opacity: 0.75;
+    margin-top: 1.5rem;
+  }
+  .line2.attribution.secondary {
+    color: var(--faint);
+    font-style: italic;
+  }
+
+  .hint {
+    position: fixed;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.45;
+    font-family: -apple-system, sans-serif;
+  }
+</style>
+</head>
+<body>
+  <div class="hint">hover each line to reveal its counterpart below</div>
+
+  <div class="stage" id="stage"></div>
+
+<script>
+  // Paragraph #1 and paragraph #2 are matched line-for-line by index.
+  // paragraph1[0] hovering reveals paragraph2[0], and so on.
+  // Each entry pairs a paragraph-1 line with its paragraph-2 counterpart.
+  // The final two pairs are attributions and sources — hovering
+  // "Mark Zuckerberg" reveals "Arturo Béjar" using the exact same row
+  // mechanism as lines 1-7.
+  const pairs = [
+    {
+      text1: "It's not that every single thing that happens",
+      text2: "I appear before you today as a dad with firsthand experience"
+    },
+    {
+      text1: "on Facebook is gonna be good.",
+      text2: "of a child who received unwanted sexual advances on Instagram."
+    },
+    {
+      text1: "This is humanity.",
+      text2: "As an expert with over 20 years of experience,"
+    },
+    {
+      text1: "People use tools for good and bad,",
+      text2: "a senior leader for safety & protection at Facebook,"
+    },
+    {
+      text1: "but I think that we have a clear responsibility",
+      text2: "it is unacceptable that a 13-year-old girl"
+    },
+    {
+      text1: "to make sure that the good is amplified",
+      text2: "gets propositioned on social media."
+    },
+    {
+      text1: "and to do everything we can to mitigate the bad.",
+      text2: "Unfortunately, it happens all too frequently today."
+    },
+    {
+      text1: "— Mark Zuckerberg (2018)",
+      text2: "— Arturo Béjar (2023)",
+      attribution: true
+    },
+    {
+      text1: "Zuckerberg--The Recode interview. By Kara Swisher.",
+      text2: "Testimony before the Subcommittee on Privacy, Technology, and the Law",
+      attribution: true
+    }
+  ];
+
+  const stage = document.getElementById('stage');
+
+  // Build one "row" per pair, each with its own independent hover state
+  pairs.forEach(pair => {
+    const row = document.createElement('div');
+    row.className = 'row';
+
+    const line1El = document.createElement('span');
+    line1El.className = pair.attribution ? 'line1 attribution' : 'line1';
+    line1El.textContent = pair.text1;
+
+    const line2El = document.createElement('span');
+    line2El.className = pair.attribution ? 'line2 attribution secondary' : 'line2';
+    line2El.textContent = pair.text2;
+
+    // Hovering THIS row only affects THIS row's line2 element,
+    // not the whole paragraph and not any other row's attribution.
+    row.addEventListener('mouseenter', () => {
+      line1El.classList.add('active');
+      line2El.classList.add('visible');
+    });
+    row.addEventListener('mouseleave', () => {
+      line1El.classList.remove('active');
+      line2El.classList.remove('visible');
+    });
+
+    row.appendChild(line1El);
+    row.appendChild(line2El);
+    stage.appendChild(row);
+  });
+</script>
+</body>
+</html>

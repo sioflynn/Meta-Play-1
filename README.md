@@ -1,2 +1,3 @@
 # Meta-Play-1
-Meta Play 1 - experiment in reveal text
+Meta Play - Experiments in reveal text, juxtaposing statements by CEOs & whistleblowers. 
+Created in Claude.
